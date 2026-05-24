@@ -1,8 +1,11 @@
-```markdown
+Here is the complete text for your `README.md` formatted in standard, raw Markdown text. You can copy this directly and paste it into your file on GitHub:
+
 # Visual-Sentry: Deep Convolutional Forensic Stylometry Engine
+
 ### **Translation-Invariant Biometric Verification via Deep Latent Space Topology**
 
 ## **1. Executive Summary**
+
 Visual-Sentry is an enterprise-grade Computer Vision framework designed for the automated forensic authentication of handwriting and signatures. Unlike traditional Optical Character Recognition (OCR) systems that merely classify text presence, Visual-Sentry isolates *how* characters are drawn to expose high-quality, synthetic forgeries.
 
 By upgrading from a flat, unstructured multi-layer perceptron to a **2D Convolutional Neural Network (CNN)**, the architecture preserves spatial coordinates, local geometry, and stroke continuity. This renders the engine highly robust against translation shifts, background paper artifacts, and real-world camera alignment distortions.
@@ -10,7 +13,9 @@ By upgrading from a flat, unstructured multi-layer perceptron to a **2D Convolut
 ---
 
 ## **2. Problem Statement & Evolutionary Jump**
+
 Traditional dense neural networks fail to process visual biometric data accurately due to two structural limitations:
+
 1. **The Parameter Explosion:** Flattening high-resolution images destroys spatial relationships between neighboring pixels, forcing fully connected layers to build massive, memory-heavy weight matrices that overfit instantly.
 2. **Translation Fragility:** Dense models rely on absolute pixel locations. If an authentic signature shifts slightly inside a camera frame, a flat model fails to recognize the pattern.
 
@@ -21,21 +26,30 @@ Visual-Sentry resolves this by preserving raw data as **3D Spatial Tensors**. It
 ## **3. Core Engineering Pipeline**
 
 ### **Phase A: Adaptive Preprocessing & Contrast Optimization**
+
 To prevent standard grayscale algorithms from washing out colored inks (blue/red ballpoint pens), Visual-Sentry implements a vector minimum channel reduction step. It converts an RGB image into a NumPy array of shape $(Height, Width, 3)$ and extracts the minimum intensity value along the channel axis:
+
 $$\text{Intensity}_{\text{processed}} = \min(\text{Red}, \text{Green}, \text{Blue})$$
-Because white paper has high intensity values across the entire spectrum ($[255, 255, 255]$), its minimum remains bright. However, any ink stroke drops significantly in at least one color spectrum, causing the text lines to darken and stand out with maximum contrast. Tensors are subsequently normalized to a $[-1.0, 1.0]$ range and resized to a stable $64 \times 64$ resolution.
+
+Because white paper has high intensity values across the entire spectrum ($[255, 255, 255]$), its minimum remains bright. However, any ink stroke drops significantly in at least one color spectrum, causing the text lines to darken and stand out with maximum contrast against the background canvas. Tensors are subsequently normalized to a $[-1.0, 1.0]$ range and resized to a stable $64 \times 64$ resolution.
 
 ### **Phase B: Localized Feature Mapping (Convolutions)**
+
 The normalized tensor passes through two sequential convolutional blocks to build a visual feature hierarchy:
+
 * **Block 1:** Slides 16 unique, learnable $3 \times 3$ kernel matrices across the canvas (Stride = 1, Padding = 1) to generate 16 specialized low-level edge feature maps.
 * **Block 2:** Slides 32 unique $3 \times 3$ kernels to combine simple lines into complex geometric motifs (curves, intersections, pen lifts).
 
 ### **Phase C: Dimensional Downsampling (Max Pooling)**
+
 Following each convolution, the feature maps enter a Max Pooling layer with a $2 \times 2$ window and a stride of 2. This process filters out spatial noise by discarding 75% of the data points, retaining only the maximum structural landmarks:
+
 $$\text{Downsampling:} \quad 64 \times 64 \longrightarrow 32 \times 32 \longrightarrow 16 \times 16$$
-This abstraction ensures the system tracks stroke patterns independent of absolute coordinates.
+
+This abstraction ensures the system tracks stroke patterns independent of absolute coordinates inside the image frame.
 
 ### **Phase D: Latent Space Bottleneck Projection**
+
 The remaining tensor stack ($16 \times 16 \times 32$ channels) is flattened into an 8,192-node vector and passed through a dense layer down to a centralized **128-neuron bottleneck layer (Latent Space)**. This bottleneck acts as a style filter, discarding minor variations to capture the unique handwriting "fingerprint" of the author.
 
 ---
@@ -59,8 +73,6 @@ To account for natural human writing variance, Visual-Sentry employs a **Triple-
 4. When a suspect image (`test_image.png`) is presented, its style vector is extracted and evaluated against the baseline using **Cosine Similarity**:
 
 $$\text{Similarity Score} = \frac{\vec{A} \cdot \vec{B}}{\|\vec{A}\| \|\vec{B}\|}$$
-
-
 
 The sample must be recognized as the correct character class via the final Softmax layer and clear a strict **92% threshold guardrail** to be verified as authentic.
 
@@ -112,7 +124,3 @@ python visual_sentry_train.py
 * **Framework Stack:** Python, PyTorch (`torch.nn`, `torch.optim`), NumPy, Pillow, Matplotlib
 * **Optimization Profile:** Cross-Entropy Loss, Adam Optimizer ($\alpha = 0.001$), 10 Epochs
 * **Data Augmentation:** Random Affine Rotations, Perspective Transforms, Bilinear Resampling
-
-```
-
-```
