@@ -1,5 +1,3 @@
-Here is the complete text for your `README.md` formatted in standard, raw Markdown text. You can copy this directly and paste it into your file on GitHub:
-
 # Visual-Sentry: Deep Convolutional Forensic Stylometry Engine
 
 ### **Translation-Invariant Biometric Verification via Deep Latent Space Topology**
